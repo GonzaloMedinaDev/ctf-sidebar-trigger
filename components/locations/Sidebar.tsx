@@ -11,6 +11,8 @@ const Sidebar = () => {
   const entryId = sdk.entry.getSys().id;
   const isPublished = sdk.entry.getSys().publishedCounter !== 0;
 
+  const titleField = sdk.entry.fields.title || sdk.entry.fields.name;
+
   // Access Content Management API with credentials
   const cma = useMemo(
     () =>
@@ -34,31 +36,35 @@ const Sidebar = () => {
 
   useEffect(() => {
     // Listen for changes on the field
-    const detach = sdk.entry.fields.title.onValueChanged(() => {
-      setIsDisabled(true);
-      isPublished ? setIsLoading(false) : setIsLoading(true);
+    if (titleField) {
+      const detach = titleField.onValueChanged(() => {
+        setIsDisabled(true);
+        isPublished ? setIsLoading(false) : setIsLoading(true);
 
-      // Ensure field is auto saved (CTF triggers auto-save every 5 seconds)
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 6000);
-    });
+        // Ensure field is auto saved (CTF triggers auto-save every 5 seconds)
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 6000);
+      });
 
-    // Clean up the listener when the component is unmounted
-    return () => detach();
-  }, [sdk.entry.fields.title, isPublished]);
+      // Clean up the listener when the component is unmounted
+      return () => detach();
+    }
+  }, [titleField, isPublished]);
 
   useEffect(() => {
-    const detach = sdk.entry.fields.permalink.onValueChanged((value) => {
-      setIsDisabled(!value);
-      isPublished ? setIsLoading(false) : setIsLoading(true);
+    if (sdk.entry.fields.permalink) {
+      const detach = sdk.entry.fields.permalink.onValueChanged((value) => {
+        setIsDisabled(!value);
+        isPublished ? setIsLoading(false) : setIsLoading(true);
 
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 6000);
-    });
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 6000);
+      });
 
-    return () => detach();
+      return () => detach();
+    }
   }, [sdk.entry.fields.permalink, isPublished]);
 
   useEffect(() => {
