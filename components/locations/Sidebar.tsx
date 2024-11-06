@@ -53,18 +53,16 @@ const Sidebar = () => {
   }, [titleField, isPublished]);
 
   useEffect(() => {
-    if (sdk.entry.fields.permalink) {
-      const detach = sdk.entry.fields.permalink.onValueChanged((value) => {
-        setIsDisabled(!value);
-        isPublished ? setIsLoading(false) : setIsLoading(true);
+    const detach = sdk.entry.fields.permalink.onValueChanged((value) => {
+      setIsDisabled(!value);
+      isPublished ? setIsLoading(false) : setIsLoading(true);
 
-        setTimeout(() => {
-          setIsLoading(false);
-        }, 6000);
-      });
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 6000);
+    });
 
-      return () => detach();
-    }
+    return () => detach();
   }, [sdk.entry.fields.permalink, isPublished]);
 
   useEffect(() => {
